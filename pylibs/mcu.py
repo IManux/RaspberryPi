@@ -54,12 +54,25 @@ class com:
 
         return ret
 
+    #works if port is opened
+    def update_dtr_state(self, value):
+        if self.__ser.is_open:
+            self.__ser.dtr = value
+            return True
+        return False
+
+    #works if port is opened
+    def update_rts_state(self, value):
+        if self.__ser.is_open:
+            self.__ser.rts = value
+            return True
+        return False
+
     def set_port(self, t_serial):
         if self.is_connected():
             return False
 
-        self.__port - t_serial
-
+        self.__port = t_serial
         return True
 
     def set_bauds(self, t_bauds):
