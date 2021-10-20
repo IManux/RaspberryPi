@@ -1,2 +1,2 @@
 # RaspberryPi
-libraries, examples, projects, others :)
+libraries, examples, projects, stuff :)
