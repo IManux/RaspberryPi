@@ -7,7 +7,7 @@ class MySQL:
     """Database connection class."""
 
 #__init__
-    def __init__(self, host='127.0.0.1', user='root', pwd='root', dbname='test', port=3306, chrset='utf8'):
+    def __init__(self, host='127.0.0.1', user='root', pwd='root', dbname='test', port=3306, chrset='utf8', dbg=False):
         self.__host = host #"DATABASE_HOST"
         self.__username = user #"DATABASE_USERNAME"
         self.__password = pwd #"DATABASE_PASSWORD"
@@ -15,6 +15,11 @@ class MySQL:
         self.__port = port #8000
         self.__charset = chrset #options: utf8, utf8mb4
         self.__conn = None
+        self.__xdebug = False
+
+    def __dbg_print(self, s):
+        if self.__xdebug:
+            print(s)
 
     def set_host(self, host):
         self.__host = host
@@ -39,7 +44,8 @@ class MySQL:
 
 #open_connection
     def open_connection(self):
-        result = False
+        ret = False
+        self.__dbg_print("open_connection()")
         """Connect to MySQL Database."""
         try:
             if self.__conn is None:
@@ -50,30 +56,32 @@ class MySQL:
                                             charset=self.__charset,
                                             cursorclass=pymysql.cursors.DictCursor, #new added
                                             connect_timeout=5)
-            result = True
+            ret = True
         except pymysql.MySQLError as e:
-            logging.error(e)
+            #logging.error(e)
+            self.__dbg_print(e)
             self.__conn = None
-            #result = False
-            #sys.exit()
         finally:
-            if result == True:
-                logging.debug('Connection opened successfully.')
+            if ret == True:
+                #logging.debug('Connection opened successfully.')
+                self.__dbg_print("Success")
             else:
-                logging.debug('open_connection() failed')
+                #logging.debug('open_connection() failed')
+                self.__dbg_print("Failed")
 
-            return result
+            return ret
 
 #close_connection
     def close_connection(self):
-        result = False
+        self.__dbg_print("close_connection()")
+        ret = False
         if self.__conn:
             self.__conn.close()
             self.__conn = None
-            result = True
-            logging.info('Database connection closed.')
-            #print('Database connection closed.')
-        return result
+            ret = True
+            #logging.info('Database connection closed.')
+            self.__dbg_print("DB CC")
+        return ret
 
 #isConnected()
     def isConnected(self):
@@ -83,22 +91,23 @@ class MySQL:
 
 #insert() - Create
     def insert(self, query, values):
-        result = False
-        print("db.insert")
+        self.__dbg_print("DB insert()")
+        ret = False
         try:
             with self.__conn.cursor() as cur:
                 cur.execute(query, values)
             self.__conn.commit()
             cur.close()
-            result = True
+            ret = True
         except pymysql.MySQLError as e:
-            logging.error(e)
+            #logging.error(e)
+            self.__dbg_print(e)
         finally:
-            return result
+            return ret
 
 #consult() - Read
     def consult(self, query):
-        print("db.consult")
+        self.__dbg_print("DB consult()")
         rows_raw = None
         rows_count = 0
         try:
@@ -108,36 +117,39 @@ class MySQL:
                     rows_raw = cur.fetchall()
             cur.close()
         except pymysql.MySQLError as e:
-            logging.error(e)
+            #logging.error(e)
+            self.__dbg_print(e)
         finally:
             return rows_raw, rows_count
 
 #update() - Update
     def update(self, query):
-        result = False
-        print("db.update")
+        self.__dbg_print("DB update()")
+        ret = False
         try:
             with self.__conn.cursor() as cur:
                 cur.execute(query)
             self.__conn.commit()
             cur.close()
-            result = True
+            ret = True
         except pymysql.MySQLError as e:
-            logging.error(e)
+            #logging.error(e)
+            self.__dbg_print(e)
         finally:
-            return result
+            return ret
 
 #delete() - Delete
     def delete(self, query):
-        result = False
-        print("db.delete")
+        self.__dbg_print("DB delete()")
+        ret = False
         try:
             with self.__conn.cursor() as cur:
                 cur.execute(query)
             self.__conn.commit()
             cur.close()
-            result = True
+            ret = True
         except pymysql.MySQLError as e:
-            logging.error(e)
+            #logging.error(e)
+            self.__dbg_print(e)
         finally:
-            return result
+            return ret
