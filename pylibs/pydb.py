@@ -15,7 +15,7 @@ class MySQL:
         self.__port = port #8000
         self.__charset = chrset #options: utf8, utf8mb4
         self.__conn = None
-        self.__xdebug = False
+        self.__xdebug = dbg
 
     def __dbg_print(self, s):
         if self.__xdebug:
